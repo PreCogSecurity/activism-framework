@@ -1,4 +1,5 @@
-**People** 
+# People
+
 * elected officials
 * stakeholders
 * advocates

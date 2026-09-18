@@ -1,14 +1,14 @@
 # Issue
 
-* what's your capacity?
-* what does success look like?
-* timeline (backwards from goals)
-* is it achievable / winnable?
-* goal:
- * Specific
- * Measurable
- * Achievable
- * Relevant
- * Timebound
-* talk about expectations to avoid demoralisation
-* how prescriptive should this be?
+* What's your capacity?
+* What does success look like?
+* Timeline (backwards from goals)
+* Is it achievable / winnable?
+* Goal:
+  * Specific
+  * Measurable
+  * Achievable
+  * Relevant
+  * Timebound
+* Talk about expectations to avoid demoralisation
+* How prescriptive should this be?
