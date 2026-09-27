@@ -14,3 +14,9 @@ desktop.ini
 .env
 .env.local
 .env.*.local
+
+# Node.js tooling (verification scripts and CI linting)
+node_modules/
+npm-debug.log*
+coverage/
+.markdownlint-cli2-cache/
