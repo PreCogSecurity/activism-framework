@@ -1,0 +1,29 @@
+{
+  "name": "activism-framework",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A collaboratively developed documentation framework for planning activist campaigns. Contains no application runtime code.",
+  "keywords": [
+    "activism",
+    "campaign-planning",
+    "documentation",
+    "framework"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "lint": "markdownlint-cli2",
+    "lint:fix": "markdownlint-cli2 --fix",
+    "validate": "node scripts/validate-content.mjs",
+    "validate:external": "node scripts/validate-content.mjs --external",
+    "test": "node --test",
+    "verify": "npm run lint && npm run validate && npm test",
+    "ci": "npm run lint && npm run validate -- --strict && npm test"
+  },
+  "devDependencies": {
+    "markdownlint-cli2": "0.23.3"
+  }
+}

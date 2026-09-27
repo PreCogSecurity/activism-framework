@@ -1,0 +1,20 @@
+# Normalise line endings in the repository AND in every working tree.
+#
+# Without this, `core.autocrlf=true` (the default on Windows) checks files out
+# with CRLF while Linux CI sees LF. That divergence is not cosmetic: it produces
+# noisy whole-file diffs when a Windows contributor edits a document, and it
+# breaks content checks that are line-ending sensitive.
+* text=auto eol=lf
+
+# Documentation is plain text and must never be treated as binary.
+*.md   text eol=lf
+*.txt  text eol=lf
+*.json text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.mjs  text eol=lf
+*.js   text eol=lf
+*.cjs  text eol=lf
+
+# Lockfiles are generated; keep diffs stable.
+package-lock.json text eol=lf -diff

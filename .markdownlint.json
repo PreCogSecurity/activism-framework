@@ -1,6 +1,15 @@
 {
+  "default": true,
+
   "MD013": false,
   "MD024": { "siblings_only": true },
   "MD033": false,
-  "MD041": false
+  "MD041": true,
+  "MD046": { "style": "fenced" },
+  "MD040": { "fenced_code_language_only": true },
+  "MD034": { "allowed_domains": [] },
+  "MD026": { "punctuation": ".,;:!。，；：！", "heading_level": 2 },
+  "MD029": { "style": "ordered" },
+  "MD035": { "style": "---" },
+  "MD036": { "punctuation": ".,;:!?。，；：！？" }
 }

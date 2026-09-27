@@ -1,3 +1,23 @@
+# Continuous integration for the Activism Framework documentation.
+#
+# SECURITY POSTURE OF THIS WORKFLOW
+# ---------------------------------
+# * Every third-party action is pinned to an immutable commit SHA. Mutable tags
+#   such as `@v4` can be repointed by whoever controls the upstream repository
+#   or by a compromised maintainer account, which would hand arbitrary code
+#   execution to anyone who opens a pull request. The tag is recorded in a
+#   comment so upgrades stay reviewable.
+# * `permissions: contents: read` grants the job no write access, so a
+#   compromised step cannot push changes or publish releases.
+# * `pull_request_target` is deliberately NOT used. It runs with repository
+#   secrets in the context of the base branch, which is the standard way
+#   untrusted forks end up executing code with elevated privileges.
+# * `persist-credentials: false` stops the ephemeral GITHUB_TOKEN from being
+#   written into .git/config where later steps (or a malicious test) could
+#   reuse it.
+# * Tooling is installed with `npm ci`, which installs exactly the versions in
+#   package-lock.json and fails if the lockfile is out of date.
+
 name: CI
 
 on:
@@ -6,21 +26,107 @@ on:
   pull_request:
     branches: [master]
 
+# Default-deny: no workflow may write to the repository unless it opts in.
+permissions:
+  contents: read
+
+# A new push to the same branch makes any in-flight run irrelevant.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint:
-    name: Markdown Lint
+    name: Markdown lint
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        # actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        # actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 20
+          node-version-file: .nvmrc
+          cache: npm
 
-      - name: Install markdownlint-cli
-        run: npm install -g markdownlint-cli
+      - name: Install pinned toolchain
+        run: npm ci
 
       - name: Run markdownlint
-        run: markdownlint "**/*.md"
+        run: npm run lint
+
+  content:
+    name: Content and link validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        # actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        # actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Validate links, structure, and secrets
+        run: npm run validate
+
+  test:
+    name: Unit and integration tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        # actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        # actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install pinned toolchain
+        run: npm ci
+
+      - name: Run test suite
+        run: npm test
+
+  dependencies:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Reporting only. A newly published advisory against a transitive package
+    # must not block a contributor from fixing a typo in the framework, so this
+    # job surfaces the finding without gating the merge. Triage it by opening an
+    # issue; the fix lands in its own focused pull request.
+    continue-on-error: true
+    steps:
+      - name: Checkout repository
+        # actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        # actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=low
